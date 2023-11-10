@@ -7,11 +7,11 @@
 [![Contributor Covenant][coc-badge]][coc-url]
 
 [mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg
-[mit-url]: https://github.com/dsntk/dsntk-test-runner/blob/main/LICENSE-MIT
+[mit-url]: LICENSE-MIT
 [apache-badge]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
-[apache-url]: https://github.com/dsntk/dsntk-test-runner/blob/main/LICENSE-APACHE
+[apache-url]: LICENSE-APACHE
 [coc-badge]: https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg
-[coc-url]: https://github.com/dsntk/dsntk-test-runner/blob/main/CODE_OF_CONDUCT.md
+[coc-url]: CODE_OF_CONDUCT.md
 
 ## Overview
 
