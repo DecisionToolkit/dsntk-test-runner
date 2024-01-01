@@ -65,8 +65,7 @@ fn main() {
     let success_count = ctx.success_count;
     let failure_count = ctx.failure_count;
     let total_count = success_count + failure_count;
-    let total_execution_time = (ctx.execution_time / 1_000_000) as f64 / 1000.0;
-    let requests_per_second = total_count as f64 / total_execution_time;
+    let requests_per_second = total_count as f64 / (ctx.execution_time as f64 / 1_000_000_000.0);
     let (success_perc, failure_perc) = if total_count > 0 {
       ((success_count * 100) as f64 / total_count as f64, (failure_count * 100) as f64 / total_count as f64)
     } else {
@@ -85,10 +84,10 @@ fn main() {
     println!("└─────────┴───────┴─────────┘");
     ctx.display_test_cases_report();
     println!("\nTimings:");
-    println!("┌───────────────────────┬────────┐");
-    println!("│ Average requests time │ {:>5.02}s │", (ctx.execution_time / 1_000_000) as f64 / 1000.0);
-    println!("│   Requests per second │ {:>6.0} │", requests_per_second);
-    println!("└───────────────────────┴────────┘");
+    println!("┌────────────────────────────┬────────┐");
+    println!("│ Average requests time [ms] │ {:>6.03} │", (ctx.execution_time as f64) / (total_count as f64) / 1_000_000.0);
+    println!("│        Requests per second │ {:>6.0} │", requests_per_second);
+    println!("└────────────────────────────┴────────┘");
   } else {
     usage();
   }
