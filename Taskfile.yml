@@ -23,12 +23,7 @@ tasks:
   clippy:
     desc: Runs clippy for all targets
     cmds:
-      - cmd: cargo +stable clippy
-  
-  clippy-all:
-    desc: Runs clippy for all targets
-    cmds:
-      - cmd: cargo +nightly clippy --all-targets
+      - cmd: cargo +stable clippy --all-targets
 
   compliance:
     desc: Runs tests configured in config-compliance.yml

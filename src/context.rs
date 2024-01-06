@@ -56,6 +56,8 @@ pub struct Context {
   pub test_case_success: BTreeSet<(String, String, String)>,
   /// Test cases that have failed.
   pub test_case_failure: BTreeMap<(String, String, String), Vec<String>>,
+  /// Number of test cases per file.
+  pub test_cases_per_file: BTreeMap<String, usize>
 }
 
 impl Context {
@@ -79,6 +81,7 @@ impl Context {
       root_dir_path: root_dir + "/",
       test_case_success: BTreeSet::new(),
       test_case_failure: BTreeMap::new(),
+      test_cases_per_file: BTreeMap::new(),
     }
   }
 
@@ -128,6 +131,7 @@ impl Context {
       if matches!(test_result, TestResult::Failure) { remarks } else { "" }
     )
     .unwrap_or_else(|e| panic!("writing line to CSV report failed with reason: {}", e));
+    self.test_cases_per_file.entry(test_file_directory.to_string()).and_modify(|count|*count +=1).or_insert(1);
     match test_result {
       TestResult::Success => {
         self.success_count += 1;
