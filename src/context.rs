@@ -5,6 +5,7 @@ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fs::File;
 use std::io::{BufWriter, Write};
 use std::path::Path;
+use std::time::Duration;
 use std::{fmt, fs, process};
 use url::Url;
 
@@ -57,7 +58,9 @@ pub struct Context {
   /// Test cases that have failed.
   pub test_case_failure: BTreeMap<(String, String, String), Vec<String>>,
   /// Number of test cases per file.
-  pub test_cases_per_file: BTreeMap<String, usize>
+  pub test_case_count_per_file: BTreeMap<String, usize>,
+  /// Execution duration per test case.
+  pub test_case_duration: BTreeMap<(String, String, String), Duration>,
 }
 
 impl Context {
@@ -81,7 +84,8 @@ impl Context {
       root_dir_path: root_dir + "/",
       test_case_success: BTreeSet::new(),
       test_case_failure: BTreeMap::new(),
-      test_cases_per_file: BTreeMap::new(),
+      test_case_count_per_file: BTreeMap::new(),
+      test_case_duration: BTreeMap::new(),
     }
   }
 
@@ -117,7 +121,7 @@ impl Context {
   }
 
   ///
-  pub fn write_line(&mut self, test_file_name: &str, test_case_id: &str, test_id: &str, test_result: TestResult, remarks: &str) {
+  pub fn write_line(&mut self, test_file_name: &str, test_case_id: &str, test_id: &str, test_result: TestResult, remarks: &str, execution_duration: Duration) {
     let test_file_directory = dir_name_stripped_prefix(&dir_name(test_file_name), &self.root_dir_path);
     let test_file_stem = file_stem(test_file_name);
     let test_case_key = (test_file_directory.clone(), test_file_stem.clone(), test_case_id.to_string());
@@ -131,12 +135,18 @@ impl Context {
       if matches!(test_result, TestResult::Failure) { remarks } else { "" }
     )
     .unwrap_or_else(|e| panic!("writing line to CSV report failed with reason: {}", e));
-    self.test_cases_per_file.entry(test_file_directory.to_string()).and_modify(|count|*count +=1).or_insert(1);
+    self
+      .test_case_count_per_file
+      .entry(test_file_directory.to_string())
+      .and_modify(|count| *count += 1)
+      .or_insert(1);
+    self.test_case_duration.insert(test_case_key.clone(), execution_duration);
+    let execution_time = &format!("{} µs", execution_duration.as_micros());
     match test_result {
       TestResult::Success => {
         self.success_count += 1;
         self.test_case_success.insert(test_case_key);
-        println!("{1}success{0} {remarks}", COLOR_RESET, COLOR_GREEN);
+        println!("{1}success{0} {execution_time} {remarks}", COLOR_RESET, COLOR_GREEN);
       }
       TestResult::Failure => {
         self.failure_count += 1;
@@ -145,7 +155,7 @@ impl Context {
           .entry(test_case_key)
           .and_modify(|failures| failures.push(remarks.to_string()))
           .or_insert(vec![remarks.to_string()]);
-        println!("{1}failure{0}\n{2}{remarks}{0}", COLOR_RESET, COLOR_RED, COLOR_YELLOW);
+        println!("{1}failure{0} {execution_time}\n{2}{remarks}{0}", COLOR_RESET, COLOR_RED, COLOR_YELLOW);
         if self.stop_on_failure {
           process::exit(1);
         }

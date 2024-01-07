@@ -10,7 +10,7 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
 use std::string::ToString;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 mod config;
 mod context;
@@ -68,13 +68,24 @@ fn main() {
     println!("\nTests per file:");
     let mut total_per_file = 0;
     println!("┌────────────────────────────────────────────────────────────────────────┬────────┐");
-    for (name, count) in &ctx.test_cases_per_file {
+    for (name, count) in &ctx.test_case_count_per_file {
       println!("│ {:70} │ {:6} │", name, count);
       total_per_file += count;
     }
     println!("├────────────────────────────────────────────────────────────────────────┼────────┤");
     println!("│                                                                  Total │ {:6} │", total_per_file);
     println!("└────────────────────────────────────────────────────────────────────────┴────────┘");
+    //------------------------------------------------------------------------------------------------------------------
+    // Report execution durations.
+    //------------------------------------------------------------------------------------------------------------------
+    let durations = ctx
+      .test_case_duration
+      .iter()
+      .map(|(key, duration)| (duration.clone(), key.clone()))
+      .collect::<BTreeMap<Duration, (String, String, String)>>();
+    for (d, k) in durations {
+      println!("{:12} µs  {}/{}/{}", d.as_micros(), k.0, k.1, k.2);
+    }
     //------------------------------------------------------------------------------------------------------------------
     // Report number of successful/failed tests.
     //------------------------------------------------------------------------------------------------------------------
@@ -182,9 +193,9 @@ fn evaluate_test_case(
               if let Some(expected) = opt_expected {
                 let expected_dto = ValueDto::from(expected);
                 if result_dto == expected_dto {
-                  ctx.write_line(file_path, test_case_id, test_id, TestResult::Success, &format!("{} µs", execution_duration.as_micros()));
+                  ctx.write_line(file_path, test_case_id, test_id, TestResult::Success, "", execution_duration);
                 } else {
-                  ctx.write_line(file_path, test_case_id, test_id, TestResult::Failure, "result differs from expected");
+                  ctx.write_line(file_path, test_case_id, test_id, TestResult::Failure, "result differs from expected", execution_duration);
                   let result_json = serde_json::to_string(&result_dto).unwrap();
                   let expected_json = serde_json::to_string(&expected_dto).unwrap();
                   println!("    result: {1}{2}{0}", COLOR_RESET, COLOR_RED, result_json);
@@ -222,26 +233,26 @@ fn evaluate_test_case(
                   }
                 }
               } else {
-                ctx.write_line(file_path, test_case_id, test_id, TestResult::Failure, "no expected value");
+                ctx.write_line(file_path, test_case_id, test_id, TestResult::Failure, "no expected value", execution_duration);
               }
             } else {
-              ctx.write_line(file_path, test_case_id, test_id, TestResult::Failure, "no actual value");
+              ctx.write_line(file_path, test_case_id, test_id, TestResult::Failure, "no actual value", execution_duration);
             }
           } else if result.errors.is_some() {
-            ctx.write_line(file_path, test_case_id, test_id, TestResult::Failure, &result.to_string());
+            ctx.write_line(file_path, test_case_id, test_id, TestResult::Failure, &result.to_string(), execution_duration);
           } else {
-            ctx.write_line(file_path, test_case_id, test_id, TestResult::Failure, format!("{:?}", result).as_str());
+            ctx.write_line(file_path, test_case_id, test_id, TestResult::Failure, format!("{:?}", result).as_str(), execution_duration);
           }
         }
         Err(reason) => {
-          ctx.write_line(file_path, test_case_id, test_id, TestResult::Failure, &reason.to_string());
+          ctx.write_line(file_path, test_case_id, test_id, TestResult::Failure, &reason.to_string(), execution_duration);
         }
       }
     }
     Err(reason) => {
       let execution_duration = execution_start_time.elapsed();
       ctx.execution_time += execution_duration.as_nanos();
-      ctx.write_line(file_path, test_case_id, test_id, TestResult::Failure, &reason.to_string());
+      ctx.write_line(file_path, test_case_id, test_id, TestResult::Failure, &reason.to_string(), execution_duration);
     }
   }
 }
