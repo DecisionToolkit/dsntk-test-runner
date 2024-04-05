@@ -2,6 +2,7 @@
 
 use crate::model::{Component, InputNode, List, Simple, Value};
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 
 /// Data transfer object for an error.
 #[derive(Debug, Deserialize)]
@@ -22,14 +23,14 @@ pub struct ResultDto<T> {
   pub errors: Option<Vec<ErrorDto>>,
 }
 
-impl<T> ToString for ResultDto<T> {
-  /// Converts results to string.
-  fn to_string(&self) -> String {
-    self
+impl<T> Display for ResultDto<T> {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let str = self
       .errors
       .as_ref()
       .map(|v| v.iter().map(|e| e.detail.clone()).collect::<Vec<String>>().join(", "))
-      .unwrap_or_default()
+      .unwrap_or_default();
+    write!(f, "{}", str)
   }
 }
 
@@ -68,7 +69,6 @@ pub struct SimpleDto {
 }
 
 impl PartialEq for SimpleDto {
-  ///
   fn eq(&self, rhs: &Self) -> bool {
     // if self.typ.is_some()
     //   && rhs.typ.is_some()

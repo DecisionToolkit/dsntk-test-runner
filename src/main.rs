@@ -9,7 +9,6 @@ use reqwest::blocking::Client;
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
-use std::string::ToString;
 use std::time::{Duration, Instant};
 
 mod config;
@@ -81,7 +80,7 @@ fn main() {
     let durations = ctx
       .test_case_duration
       .iter()
-      .map(|(key, duration)| (duration.clone(), key.clone()))
+      .map(|(key, duration)| (*duration, key.clone()))
       .collect::<BTreeMap<Duration, (String, String, String)>>();
     for (d, k) in durations {
       println!("{:12} µs  {}/{}/{}", d.as_micros(), k.0, k.1, k.2);
@@ -126,7 +125,6 @@ fn main() {
   }
 }
 
-///
 fn execute_tests(ctx: &mut Context, file_path: &str, client: &Client, evaluate_url: &str) {
   let text = format!("  Parsing test file: {}", file_path);
   print!("\n{} {} ", text, &GAP[..GUTTER - text.len()]);
@@ -169,7 +167,6 @@ fn execute_tests(ctx: &mut Context, file_path: &str, client: &Client, evaluate_u
   }
 }
 
-///
 #[allow(clippy::too_many_arguments)]
 fn evaluate_test_case(
   ctx: &mut Context,
@@ -257,7 +254,6 @@ fn evaluate_test_case(
   }
 }
 
-///
 fn search_files(path: &Path, pattern: &Regex, files: &mut BTreeMap<String, (Vec<String>, Vec<String>)>) {
   if let Ok(entries) = fs::read_dir(path) {
     for entry in entries.flatten() {

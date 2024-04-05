@@ -5,7 +5,7 @@ silent: true
 tasks:
 
   all:
-    desc: Runs tests configured in config-all.yml 
+    desc: Runs tests configured in config-all.yml
     cmds:
       - cmd: cargo +stable run -- config-all.yml
 
@@ -58,4 +58,4 @@ tasks:
   test:
     desc: Runs tests in debug mode
     cmds:
-      - cmd: cargo +nightly test
+      - cmd: cargo +stable test

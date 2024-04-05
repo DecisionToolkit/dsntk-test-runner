@@ -1,6 +1,7 @@
 //! # XML model for test cases
 
 use roxmltree::Node;
+use std::fmt::Display;
 use std::fs::read_to_string;
 
 const XSI: &str = "http://www.w3.org/2001/XMLSchema-instance";
@@ -63,14 +64,15 @@ impl From<Option<String>> for TestCaseType {
   }
 }
 
-impl ToString for TestCaseType {
-  fn to_string(&self) -> String {
-    match self {
+impl Display for TestCaseType {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let str = match self {
       TestCaseType::Decision => "decision",
       TestCaseType::BusinessKnowledgeModel => "bkm",
       TestCaseType::DecisionService => "decisionService",
     }
-    .to_string()
+    .to_string();
+    write!(f, "{}", str)
   }
 }
 
