@@ -4,17 +4,17 @@ version = "0.0.1"
 authors = ["Dariusz Depta <depta@engos.de>"]
 description = "Test runner for Decision Toolkit"
 documentation = "https://docs.rs/dsntk-test-runner"
-repository = "https://github.com/dsntk/dsntk-test-runner.git"
+repository = "https://github.com/DecisionToolkit/dsntk-test-runner.git"
 license = "MIT OR Apache-2.0"
 edition = "2021"
 
 [dependencies]
-base64 = "0.22.0"
+base64 = "0.22.1"
 http = "1.1.0"
-regex = "1.10.4"
-reqwest = { version = "0.12.3", default-features = false, features = ["blocking", "json", "rustls-tls"] }
-roxmltree = "0.19.0"
-serde = { version = "1.0.198", features = ["derive"] }
-serde_json = "1.0.116"
+regex = "1.10.6"
+reqwest = { version = "0.12.7", default-features = false, features = ["blocking", "json", "rustls-tls"] }
+roxmltree = "0.20.0"
+serde = { version = "1.0.209", features = ["derive"] }
+serde_json = "1.0.127"
 serde_yaml = "0.9.33"
-url = "2.5.0"
+url = "2.5.2"
