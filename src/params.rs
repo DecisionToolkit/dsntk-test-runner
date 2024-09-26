@@ -6,7 +6,7 @@ use serde::Serialize;
 /// Parameters for evaluating an invocable.
 #[derive(Serialize)]
 pub struct EvaluateParams {
-  /// Path to invocable to be evaluated.
+  /// Path to invocable being evaluated.
   #[serde(rename = "invocable")]
   pub invocable_path: String,
   /// Input values.

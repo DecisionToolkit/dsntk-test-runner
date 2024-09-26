@@ -10,6 +10,7 @@ edition = "2021"
 publish = false
 
 [dependencies]
+antex = "0.0.8"
 base64 = "0.22.1"
 http = "1.1.0"
 iso8601-duration = "0.2.0"

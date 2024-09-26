@@ -1,12 +1,13 @@
 //! # Context for testing process
 
-use crate::{COLOR_BRIGHT_WHITE, COLOR_GREEN, COLOR_RED, COLOR_RESET, COLOR_YELLOW};
+use crate::formatter::*;
+use antex::ColorMode;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fs::File;
 use std::io::{BufWriter, Write};
 use std::path::Path;
 use std::time::Duration;
-use std::{fmt, fs, process};
+use std::{fmt, fs};
 use url::Url;
 
 /// Test results.
@@ -116,7 +117,8 @@ impl Context {
     self.model_rdnns.get(file_name).cloned().expect("model RDNN not found for specified file name")
   }
 
-  pub fn write_line(&mut self, test_file_name: &str, test_case_id: &str, test_id: &str, test_result: TestResult, remarks: &str, execution_duration: Duration) {
+  #[allow(clippy::too_many_arguments)]
+  pub fn write_line(&mut self, test_file_name: &str, test_case_id: &str, test_id: &str, test_result: TestResult, remarks: &str, execution_duration: Duration, cm: ColorMode) {
     let test_file_directory = dir_name_stripped_prefix(&dir_name(test_file_name), &self.root_dir_path);
     let test_file_stem = file_stem(test_file_name);
     let test_case_key = (test_file_directory.clone(), test_file_stem.clone(), test_case_id.to_string());
@@ -136,12 +138,11 @@ impl Context {
       .and_modify(|count| *count += 1)
       .or_insert(1);
     self.test_case_duration.insert(test_case_key.clone(), execution_duration);
-    let execution_time = &format!("{} µs", execution_duration.as_micros());
     match test_result {
       TestResult::Success => {
         self.success_count += 1;
         self.test_case_success.insert(test_case_key);
-        println!("{1}success{0} {execution_time} {remarks}", COLOR_RESET, COLOR_GREEN);
+        text_success_execution_time_remarks(cm, execution_duration.as_micros(), remarks).println();
       }
       TestResult::Failure => {
         self.failure_count += 1;
@@ -150,15 +151,18 @@ impl Context {
           .entry(test_case_key)
           .and_modify(|failures| failures.push(remarks.to_string()))
           .or_insert(vec![remarks.to_string()]);
-        println!("{1}failure{0} {execution_time}\n{2}{remarks}{0}", COLOR_RESET, COLOR_RED, COLOR_YELLOW);
-        if self.stop_on_failure {
-          process::exit(1);
-        }
+        text_failure_execution_time_remarks(cm, execution_duration.as_micros(), remarks).println();
       }
     }
   }
 
-  pub fn display_test_cases_report(&mut self) {
+  pub fn display_tests_summary(&mut self, cm: ColorMode) {
+    println!("\nTests:");
+    let total_count = self.success_count + self.failure_count;
+    text_summary_table(cm, total_count, self.success_count, self.failure_count).println();
+  }
+
+  pub fn display_test_cases_summary(&mut self, cm: ColorMode) {
     let mut total = self.test_case_success.clone();
     total.extend(self.test_case_failure.keys().cloned().collect::<HashSet<(String, String, String)>>());
     let mut success = self.test_case_success.clone();
@@ -166,18 +170,8 @@ impl Context {
     let total_count = total.len();
     let success_count = success.len();
     let failure_count = self.test_case_failure.len();
-    let (success_perc, failure_perc) = Self::calc_perc(total_count, success_count, failure_count);
     println!("\nTest cases:");
-    println!("┌─────────┬───────┬─────────┐");
-    println!("│   Total │ {total_count:>5} │         │");
-    println!("├─────────┼───────┼─────────┤");
-    println!("│ {1}Success{0} │ {1}{success_count:>5}{0} │{1}{success_perc:>7.2}%{0} │", COLOR_RESET, COLOR_GREEN);
-    println!(
-      "│ {1}Failure{0} │ {1}{failure_count:>5}{0} │{1}{failure_perc:>7.2}%{0} │",
-      COLOR_RESET,
-      if failure_count > 0 { COLOR_RED } else { COLOR_BRIGHT_WHITE }
-    );
-    println!("└─────────┴───────┴─────────┘");
+    text_summary_table(cm, total_count, success_count, failure_count).println();
 
     // write TCK report
     for key @ (test_directory, test_file, test_case_id) in &total {
@@ -204,15 +198,6 @@ impl Context {
         )
         .unwrap_or_else(|e| panic!("writing line to TCK report failed with reason: {}", e));
       }
-    }
-  }
-
-  /// Calculates percentages.
-  fn calc_perc(total: usize, success: usize, failure: usize) -> (f64, f64) {
-    if total > 0 {
-      ((success * 100) as f64 / total as f64, (failure * 100) as f64 / total as f64)
-    } else {
-      (0.0, 0.0)
     }
   }
 }
