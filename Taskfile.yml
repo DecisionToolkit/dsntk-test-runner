@@ -4,8 +4,13 @@ silent: true
 
 tasks:
 
+  all:
+    desc: Runs compliance tests
+    cmds:
+      - task: compliance
+
   build:
-    desc: Builds in debug mode
+    desc: Builds the project in debug mode
     cmds:
       - cmd: cargo +stable build
 
