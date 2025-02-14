@@ -34,6 +34,6 @@ at your option.
 
 ## Contribution
 
-Any contributions to [**dfp-number-sys**][repository-url] are greatly appreciated.
+Any contributions to [**dsntk-test-runner**][repository-url] are greatly appreciated.
 All contributions intentionally submitted for inclusion in the work by you,
 shall be dual licensed as above, without any additional terms or conditions.
