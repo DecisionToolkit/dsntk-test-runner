@@ -1,6 +1,6 @@
-**DSNTK** | Decision Toolkit
+**dsntk** | Decision Toolkit
 
-# Test runner
+# TCK test runner for Decision Toolkit
 
 [![MIT licensed][mit-badge]][mit-url]
 [![Apache 2.0 licensed][apache-badge]][apache-url]
@@ -15,6 +15,7 @@
 [apache-notice-url]: NOTICE
 [coc-badge]: https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg
 [coc-url]: CODE_OF_CONDUCT.md
+[repository-url]: https://github.com/DecisionToolkit/dsntk-test-runner
 
 ## Overview
 
@@ -33,7 +34,6 @@ at your option.
 
 ## Contribution
 
-Any contributions to are greatly appreciated.
-If you would like to get involved, please don't hesitate to reach out to us.
+Any contributions to [**dfp-number-sys**][repository-url] are greatly appreciated.
 All contributions intentionally submitted for inclusion in the work by you,
 shall be dual licensed as above, without any additional terms or conditions.
