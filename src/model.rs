@@ -33,6 +33,7 @@ const ATTR_TYPE: &str = "type";
 #[derive(Debug)]
 pub struct TestCases {
   pub model_name: Option<String>,
+  #[allow(dead_code)]
   pub labels: Vec<String>,
   pub test_cases: Vec<TestCase>,
 }
@@ -82,10 +83,13 @@ pub struct TestCase {
   /// Optional identifier of this [TestCase].
   pub id: Option<String>,
   /// Optional name of this [TestCase].
+  #[allow(dead_code)]
   pub name: Option<String>,
   /// Type of this [TestCase] with default value `Decision`.
+  #[allow(dead_code)]
   pub typ: TestCaseType,
   /// Optional description for this [TestCase].
+  #[allow(dead_code)]
   pub description: Option<String>,
   /// Optional invocable name.
   pub invocable_name: Option<String>,
@@ -108,10 +112,14 @@ pub struct InputNode {
 #[derive(Debug)]
 pub struct ResultNode {
   pub name: String,
+  #[allow(dead_code)]
   pub error_result: bool,
+  #[allow(dead_code)]
   pub typ: TestCaseType,
+  #[allow(dead_code)]
   pub cast: Option<String>,
   pub expected: Option<Value>,
+  #[allow(dead_code)]
   pub computed: Option<Value>,
 }
 

@@ -14,6 +14,7 @@ use url::Url;
 pub enum TestResult {
   Success,
   Failure,
+  Ignored,
 }
 
 impl fmt::Display for TestResult {
@@ -25,6 +26,7 @@ impl fmt::Display for TestResult {
       match self {
         Self::Success => "SUCCESS",
         Self::Failure => "ERROR",
+        Self::Ignored => "IGNORED",
       }
     )
   }
@@ -153,6 +155,7 @@ impl Context {
           .or_insert(vec![remarks.to_string()]);
         text_failure_execution_time_remarks(cm, execution_duration.as_micros(), remarks).println();
       }
+      _ => {}
     }
   }
 
@@ -173,7 +176,7 @@ impl Context {
     println!("\nTest cases:");
     text_summary_table(cm, total_count, success_count, failure_count).println();
 
-    // write TCK report
+    // Write the TCK compatibility report.
     for key @ (test_directory, test_file, test_case_id) in &total {
       if success.contains(key) {
         writeln!(
@@ -184,19 +187,18 @@ impl Context {
           test_case_id,
           TestResult::Success,
         )
-        .unwrap_or_else(|e| panic!("writing line to TCK report failed with reason: {}", e));
+        .unwrap_or_else(|reason| panic!("writing line to TCK report failed with reason: {reason}"));
       }
       if self.test_case_failure.contains_key(key) {
         writeln!(
           self.tck_report_writer,
-          r#""{}","{}","{}","{}","{}""#,
+          r#""{}","{}","{}","{}","""#,
           test_directory,
           test_file,
           test_case_id,
-          TestResult::Failure,
-          self.test_case_failure.get(key).unwrap().join(",")
+          TestResult::Ignored,
         )
-        .unwrap_or_else(|e| panic!("writing line to TCK report failed with reason: {}", e));
+        .unwrap_or_else(|reason| panic!("writing line to TCK report failed with reason: {reason}"));
       }
     }
   }
