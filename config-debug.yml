@@ -1,5 +1,5 @@
 test_cases_dir_path: ../tck/TestCases
-file_search_pattern: compliance-level-3/1111
+file_search_pattern: compliance-level-3/1115
 evaluate_url: http://127.0.0.1:22022/tck
 report_file: output/results_debug.csv
 tck_report_file: output/tck_results_debug.csv
