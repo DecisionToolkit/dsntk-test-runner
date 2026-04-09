@@ -1,6 +1,6 @@
-**dsntk** | Decision Toolkit
+**dsntk** | ÐecisionToolkit
 
-# TCK test runner for Decision Toolkit
+# TCK test runner for [ÐecisionToolkit]
 
 [![MIT licensed][mit-badge]][mit-url]
 [![Apache 2.0 licensed][apache-badge]][apache-url]
@@ -16,12 +16,13 @@
 [coc-badge]: https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg
 [coc-url]: CODE_OF_CONDUCT.md
 [repository-url]: https://github.com/DecisionToolkit/dsntk-test-runner
+[ÐecisionToolkit]: https://github.com/DecisionToolkit/dsntk
+[Rust]: https://www.rust-lang.org
 
 ## Overview
 
 Implementation of the [DMN™ Technology Compatibility Kit](https://dmn-tck.github.io/tck) **test runner**.
-This test runner is provided to automate test execution for [Decision Toolkit](https://github.com/dsntk/dsntk-rs)
-written in [Rust](https://www.rust-lang.org).
+This test runner is provided to automate test execution for [Decision Toolkit] written in [Rust].
 
 ## License
 
