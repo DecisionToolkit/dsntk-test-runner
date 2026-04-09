@@ -22,7 +22,7 @@
 ## Overview
 
 Implementation of the [DMN™ Technology Compatibility Kit](https://dmn-tck.github.io/tck) **test runner**.
-This test runner is provided to automate test execution for [Decision Toolkit] written in [Rust].
+This test runner is provided to automate test execution for [ÐecisionToolkit] written in [Rust].
 
 ## License
 
